@@ -1,0 +1,43 @@
+{
+  "name": "ngx-apexsankey",
+  "version": "1.0.0",
+  "description": "Angular wrapper for ApexSankey - A JavaScript library to create Sankey diagrams",
+  "license": "See LICENSE in LICENSE",
+  "author": "ApexCharts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apexcharts/ngx-apexsankey"
+  },
+  "keywords": [
+    "angular",
+    "sankey",
+    "chart",
+    "diagram",
+    "apexsankey",
+    "visualization",
+    "svg"
+  ],
+  "peerDependencies": {
+    "@angular/common": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "@angular/core": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "apexsankey": "^1.2.0",
+    "@svgdotjs/svg.js": "^3.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.6.0"
+  },
+  "devDependencies": {
+    "@angular/compiler": "^17.0.0",
+    "@angular/compiler-cli": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "@angular/common": "^17.0.0",
+    "ng-packagr": "^17.0.0",
+    "typescript": "~5.2.0"
+  },
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json",
+    "demo": "cd demo && npm start",
+    "demo:build": "cd demo && npm run build"
+  },
+  "sideEffects": false
+}

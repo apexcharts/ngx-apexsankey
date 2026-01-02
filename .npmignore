@@ -1,0 +1,39 @@
+# source files (dist is published, not src)
+src/
+
+# demo app
+demo/
+
+# config files
+tsconfig.json
+ng-package.json
+.gitignore
+.editorconfig
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+npm-debug.log*
+
+# test
+coverage/
+*.spec.ts
+
+# temp
+tmp/
+.tmp/
+out-tsc/
+.angular/
+
+# misc
+node_modules/
+*.tgz
