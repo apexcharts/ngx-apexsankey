@@ -20,7 +20,7 @@
   "peerDependencies": {
     "@angular/common": "^17.0.0 || ^18.0.0 || ^19.0.0",
     "@angular/core": "^17.0.0 || ^18.0.0 || ^19.0.0",
-    "apexsankey": "^1.2.0",
+    "apexsankey": "^1.4.0",
     "@svgdotjs/svg.js": "^3.0.0"
   },
   "dependencies": {
