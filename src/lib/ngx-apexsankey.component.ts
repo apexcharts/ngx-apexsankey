@@ -10,18 +10,15 @@ import {
   SimpleChanges,
   ViewChild,
   ChangeDetectionStrategy,
-  PLATFORM_ID,
-  Inject,
-} from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+} from "@angular/core";
 import {
   GraphData,
   SankeyOptions,
   SankeyGraph,
   SankeyNode,
   ApexSankeyInstance,
-} from './types';
-import { getApexSankeyClass, applyStoredLicense } from './utils';
+} from "./types";
+import { getApexSankeyClass, applyStoredLicense } from "./utils";
 
 /**
  * angular wrapper component for ApexSankey
@@ -37,7 +34,7 @@ import { getApexSankeyClass, applyStoredLicense } from './utils';
  * ```
  */
 @Component({
-  selector: 'ngx-apexsankey',
+  selector: "ngx-apexsankey",
   standalone: true,
   template: `<div #container [style]="containerStyle"></div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,7 +58,8 @@ export class NgxApexsankeyComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * reference to the container element
    */
-  @ViewChild('container', { static: true }) containerRef!: ElementRef<HTMLElement>;
+  @ViewChild("container", { static: true })
+  containerRef!: ElementRef<HTMLElement>;
 
   /**
    * the rendered sankey graph instance
@@ -69,11 +67,7 @@ export class NgxApexsankeyComponent implements OnInit, OnDestroy, OnChanges {
   graph: SankeyGraph | null = null;
 
   private instance: ApexSankeyInstance | null = null;
-  private isBrowser: boolean;
-
-  constructor(@Inject(PLATFORM_ID) platformId: object) {
-    this.isBrowser = isPlatformBrowser(platformId);
-  }
+  private isBrowser = typeof window !== "undefined";
 
   /**
    * computed container styles from options
@@ -82,15 +76,15 @@ export class NgxApexsankeyComponent implements OnInit, OnDestroy, OnChanges {
     const style: Record<string, string> = {};
 
     if (this.options?.width) {
-      style['width'] =
-        typeof this.options.width === 'number'
+      style["width"] =
+        typeof this.options.width === "number"
           ? `${this.options.width}px`
           : this.options.width;
     }
 
     if (this.options?.height) {
-      style['height'] =
-        typeof this.options.height === 'number'
+      style["height"] =
+        typeof this.options.height === "number"
           ? `${this.options.height}px`
           : this.options.height;
     }
@@ -110,13 +104,13 @@ export class NgxApexsankeyComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     // if options changed, recreate the chart
-    if (changes['options'] && !changes['options'].firstChange) {
+    if (changes["options"] && !changes["options"].firstChange) {
       this.recreateChart();
       return;
     }
 
     // if data changed, re-render
-    if (changes['data'] && !changes['data'].firstChange) {
+    if (changes["data"] && !changes["data"].firstChange) {
       this.renderChart();
     }
   }
@@ -138,9 +132,9 @@ export class NgxApexsankeyComponent implements OnInit, OnDestroy, OnChanges {
 
     if (!ApexSankey) {
       throw new Error(
-        '[ngx-apexsankey] ApexSankey not found. ' +
-          'Make sure to import apexsankey and @svgdotjs/svg.js before using this component. ' +
-          'See README for installation instructions.'
+        "[ngx-apexsankey] ApexSankey not found. " +
+          "Make sure to import apexsankey and @svgdotjs/svg.js before using this component. " +
+          "See README for installation instructions.",
       );
     }
 
@@ -190,7 +184,7 @@ export class NgxApexsankeyComponent implements OnInit, OnDestroy, OnChanges {
 
     const container = this.containerRef?.nativeElement;
     if (container) {
-      container.innerHTML = '';
+      container.innerHTML = "";
     }
 
     this.graph = null;
