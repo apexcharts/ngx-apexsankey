@@ -1,54 +1,16 @@
 # ngx-apexsankey
 
-Angular wrapper for [ApexSankey](https://github.com/apexcharts/apexsankey) - A JavaScript library to create Sankey diagrams.
+Angular wrapper for [ApexSankey](https://github.com/apexcharts/apexsankey) — a JavaScript library for creating Sankey diagrams.
 
 ## Installation
 
 ```bash
-npm install ngx-apexsankey apexsankey @svgdotjs/svg.js
+npm install ngx-apexsankey apexsankey
 ```
 
-## Loading ApexSankey
+> **Note:** `apexsankey` is a peer dependency and must be installed alongside `ngx-apexsankey`.
 
-**Important:** You must load ApexSankey before using the Angular component. Choose one of the following methods:
-
-### Option 1: CDN Script Tags (Recommended)
-
-Add the scripts to your `index.html`:
-
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexsankey/apexsankey.min.js"></script>
-  </head>
-  <body>
-    <app-root></app-root>
-  </body>
-</html>
-```
-
-### Option 2: Angular.json Scripts
-
-Add to the `scripts` array in your `angular.json`:
-
-```json
-{
-  "architect": {
-    "build": {
-      "options": {
-        "scripts": [
-          "node_modules/@svgdotjs/svg.js/dist/svg.min.js",
-          "node_modules/apexsankey/apexsankey.min.js"
-        ]
-      }
-    }
-  }
-}
-```
-
-## Quick Start
+## Basic Usage
 
 ```typescript
 import { Component } from "@angular/core";
@@ -67,8 +29,7 @@ import {
       [data]="data"
       [options]="options"
       (nodeClick)="onNodeClick($event)"
-    >
-    </ngx-apexsankey>
+    ></ngx-apexsankey>
   `,
 })
 export class ExampleComponent {
@@ -76,23 +37,25 @@ export class ExampleComponent {
     nodes: [
       { id: "oil", title: "Oil" },
       { id: "gas", title: "Natural Gas" },
+      { id: "coal", title: "Coal" },
       { id: "fossil", title: "Fossil Fuels" },
       { id: "energy", title: "Energy" },
     ],
     edges: [
-      { source: "oil", target: "fossil", value: 15 },
-      { source: "gas", target: "fossil", value: 20 },
-      { source: "fossil", target: "energy", value: 35 },
+      { source: "oil", target: "fossil", value: 15, type: "flow" },
+      { source: "gas", target: "fossil", value: 20, type: "flow" },
+      { source: "coal", target: "fossil", value: 25, type: "flow" },
+      { source: "fossil", target: "energy", value: 60, type: "flow" },
     ],
   };
 
   options: Partial<SankeyOptions> = {
     width: 800,
-    height: 600,
+    height: 500,
     nodeWidth: 20,
   };
 
-  onNodeClick(node: any) {
+  onNodeClick(node: unknown) {
     console.log("Node clicked:", node);
   }
 }
@@ -103,91 +66,120 @@ export class ExampleComponent {
 If you have a commercial license, set it once at app initialization:
 
 ```typescript
-// app.config.ts
+// main.ts
 import { setApexSankeyLicense } from "ngx-apexsankey";
 
 setApexSankeyLicense("your-license-key-here");
 
-export const appConfig: ApplicationConfig = {
-  providers: [],
-};
+bootstrapApplication(AppComponent, appConfig);
 ```
 
 ## Inputs
 
-| Input     | Type                     | Required | Description                           |
-| --------- | ------------------------ | -------- | ------------------------------------- |
-| `data`    | `GraphData`              | Yes      | Sankey diagram data (nodes and edges) |
-| `options` | `Partial<SankeyOptions>` | No       | Configuration options for the diagram |
+| Input     | Type                     | Required | Description                       |
+| --------- | ------------------------ | -------- | --------------------------------- |
+| `data`    | `GraphData`              | Yes      | Sankey data (nodes and edges)     |
+| `options` | `Partial<SankeyOptions>` | No       | Sankey configuration (see below)  |
 
 ## Outputs
 
-| Output      | Type                       | Description                  |
-| ----------- | -------------------------- | ---------------------------- |
-| `nodeClick` | `EventEmitter<SankeyNode>` | Emits when a node is clicked |
+| Output      | Type                          | Description                  |
+| ----------- | ----------------------------- | ---------------------------- |
+| `nodeClick` | `EventEmitter<SankeyNode>`    | Emits when a node is clicked |
 
-## Data Format
+## SankeyOptions
 
-### Nodes
+All Sankey configuration is passed through the `options` input. `SankeyOptions` is an intersection of the sub-interfaces below — pass a partial; any omitted field falls back to its default.
 
-```typescript
+#### Canvas & layout
+
+| Option           | Type               | Default  | Description                                                         |
+| ---------------- | ------------------ | -------- | ------------------------------------------------------------------- |
+| `width`          | `number \| string` | `'100%'` | Canvas width (pixel number or CSS percentage)                       |
+| `height`         | `number \| string` | `'auto'` | Canvas height. `'auto'` derives from width at 1.6:1                 |
+| `spacing`        | `number`           | `20`     | Horizontal spacing between node columns in pixels                   |
+| `viewPortWidth`  | `number`           | `800`    | Internal SVG viewport width                                         |
+| `viewPortHeight` | `number`           | `500`    | Internal SVG viewport height                                        |
+| `whitespace`     | `number`           | `0.18`   | Fraction of vertical space used as margins between nodes (0–1)      |
+| `canvasStyle`    | `string`           | `''`     | Arbitrary CSS injected onto the SVG root container                  |
+| `enableToolbar`  | `boolean`          | `true`   | Show the zoom/pan/export toolbar                                    |
+
+#### Nodes
+
+| Option            | Type                              | Default | Description                                                |
+| ----------------- | --------------------------------- | ------- | ---------------------------------------------------------- |
+| `nodeWidth`       | `number`                          | `20`    | Width of each node rectangle in pixels                     |
+| `nodeBorderWidth` | `number`                          | `1`     | Border width of each node in pixels                        |
+| `nodeBorderColor` | `string \| null`                  | `null`  | Node border color                                          |
+| `onNodeClick`     | `(node: SankeyNode) => void`      | -       | Callback fired when a node is clicked (prefer `nodeClick` output) |
+
+#### Edges
+
+| Option             | Type      | Default | Description                                                     |
+| ------------------ | --------- | ------- | --------------------------------------------------------------- |
+| `edgeOpacity`      | `number`  | `0.4`   | Opacity of edges (0–1)                                          |
+| `edgeGradientFill` | `boolean` | `true`  | Fill edges with a gradient between source and target colors    |
+| `edgeGap`          | `number`  | `2`     | Gap in pixels between adjacent edges at their connection points |
+
+#### Font
+
+| Option       | Type     | Default     | Description                      |
+| ------------ | -------- | ----------- | -------------------------------- |
+| `fontSize`   | `string` | `'14px'`    | CSS font-size for node labels    |
+| `fontFamily` | `string` | `''`        | CSS font-family for node labels  |
+| `fontWeight` | `string` | `'400'`     | CSS font-weight for node labels  |
+| `fontColor`  | `string` | `'#212121'` | CSS color for node labels        |
+
+#### Tooltip
+
+| Option                | Type                                          | Default                          | Description                                  |
+| --------------------- | --------------------------------------------- | -------------------------------- | -------------------------------------------- |
+| `enableTooltip`       | `boolean`                                     | `true`                           | Show edge tooltips on hover                  |
+| `tooltipTheme`        | `'light' \| 'dark'`                           | -                                | Shortcut for dark/light color presets        |
+| `tooltipBGColor`      | `string`                                      | `'#FFFFFF'`                      | Tooltip background color                     |
+| `tooltipBorderColor`  | `string`                                      | `'#E2E8F0'`                      | Tooltip border color                         |
+| `tooltipFontColor`    | `string`                                      | `'#1a1a1a'`                      | Tooltip font color                           |
+| `tooltipId`           | `string`                                      | `'apexsankey-tooltip-container'` | HTML `id` for the tooltip container          |
+| `tooltipTemplate`     | `(content: TooltipContent) => string`         | -                                | Custom edge (source→target) tooltip HTML     |
+| `nodeTooltipTemplate` | `(content: NodeTooltipContent) => string`     | -                                | Custom per-node tooltip HTML                 |
+
+#### Interaction & animation
+
+| Option                   | Type      | Default | Description                                                    |
+| ------------------------ | --------- | ------- | -------------------------------------------------------------- |
+| `highlightConnectedPath` | `boolean` | `true`  | Highlight the connected flow path on hover                     |
+| `dimOpacity`             | `number`  | `0.15`  | Opacity for dimmed (unrelated) elements during highlighting    |
+| `animation.enabled`      | `boolean` | `true`  | Play entrance animation (disabled if `prefers-reduced-motion`) |
+| `animation.duration`     | `number`  | `800`   | Entrance animation duration in ms                              |
+
+#### Accessibility
+
+| Option               | Type      | Default | Description                                                  |
+| -------------------- | --------- | ------- | ------------------------------------------------------------ |
+| `a11y.enabled`       | `boolean` | `true`  | Enable WCAG 2.1 AA accessibility features                    |
+| `a11y.diagramLabel`  | `string`  | -       | Override the auto-generated aria-label on the SVG root       |
+| `a11y.description`   | `string`  | -       | Populates the `<desc>` element for a longer description      |
+
+## Data Structure
+
+```ts
+interface GraphData {
+  nodes: SankeyNode[];
+  edges: SankeyEdge[];
+}
+
 interface SankeyNode {
-  id: string; // unique identifier
-  title: string; // display label
-  color?: string; // optional custom color
+  id: string;       // unique identifier
+  title: string;    // display label
+  color?: string;   // override auto-assigned palette color
 }
-```
 
-### Edges
-
-```typescript
 interface SankeyEdge {
-  source: string; // source node id
-  target: string; // target node id
-  value: number; // edge weight/size
-  type?: string; // optional grouping type
-  color?: string; // optional custom color
+  source: string;   // id of upstream node
+  target: string;   // id of downstream node
+  value: number;    // flow value — determines edge band width
+  type: string;     // category label (used for grouping and tooltip)
 }
-```
-
-## Options
-
-| Option               | Type                  | Default                      | Description                                  |
-| -------------------- | --------------------- | ---------------------------- | -------------------------------------------- |
-| `width`              | `number \| string`    | `800`                        | Width of graph container                     |
-| `height`             | `number \| string`    | `800`                        | Height of graph container                    |
-| `canvasStyle`        | `string`              | `""`                         | CSS styles for canvas root container         |
-| `spacing`            | `number`              | `100`                        | Spacing from top and left of graph container |
-| `nodeWidth`          | `number`              | `20`                         | Width of graph nodes                         |
-| `nodeBorderWidth`    | `number`              | `1`                          | Border width of nodes in pixels              |
-| `nodeBorderColor`    | `string`              | `""`                         | Border color of nodes                        |
-| `onNodeClick`        | `(node) => void`      | `undefined`                  | Callback function for node click             |
-| `edgeOpacity`        | `number`              | `0.4`                        | Opacity value for edges (0 to 1)             |
-| `edgeGradientFill`   | `boolean`             | `true`                       | Enable gradient fill based on node colors    |
-| `enableTooltip`      | `boolean`             | `false`                      | Enable tooltip on hover                      |
-| `enableToolbar`      | `boolean`             | `false`                      | Enable/disable graph toolbar                 |
-| `tooltipId`          | `string`              | `"sankey-tooltip-container"` | Tooltip HTML element id                      |
-| `tooltipTemplate`    | `(content) => string` | default template             | HTML template for tooltip                    |
-| `tooltipBorderColor` | `string`              | `"#BCBCBC"`                  | Border color of tooltip                      |
-| `tooltipBGColor`     | `string`              | `"#FFFFFF"`                  | Background color of tooltip                  |
-| `fontSize`           | `string`              | `"14px"`                     | Font size of node labels                     |
-| `fontFamily`         | `string`              | `""`                         | Font family of node labels                   |
-| `fontWeight`         | `string`              | `"400"`                      | Font weight of node labels                   |
-| `fontColor`          | `string`              | `"#000000"`                  | Font color of node labels                    |
-
-## Custom Node Ordering
-
-```typescript
-const data: GraphData = {
-  nodes: [...],
-  edges: [...],
-  options: {
-    order: [
-      [['a', 'b']], // first layer
-      [['c']]       // second layer
-    ]
-  }
-};
 ```
 
 ## Custom Tooltip
@@ -197,38 +189,40 @@ const options: Partial<SankeyOptions> = {
   enableTooltip: true,
   tooltipTemplate: ({ source, target, value }) => `
     <div style="padding: 8px;">
-      <strong>${source.title}</strong> → <strong>${target.title}</strong>
+      <strong>${source?.title}</strong> → <strong>${target?.title}</strong>
       <br />Value: ${value}
     </div>
   `,
 };
 ```
 
-## TypeScript
-
-All types are exported:
+## TypeScript Support
 
 ```typescript
 import {
   NgxApexsankeyComponent,
+  setApexSankeyLicense,
+} from "ngx-apexsankey";
+
+import type {
   GraphData,
   SankeyNode,
   SankeyEdge,
   SankeyOptions,
   SankeyGraph,
-  setApexSankeyLicense,
+  TooltipContent,
 } from "ngx-apexsankey";
 ```
 
-## Browser Support
-
-- Angular 17+
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-
 ## License
 
-See [LICENSE](./LICENSE) file for details.
+ngx-apexsankey uses the same dual-license model as ApexCharts. See [LICENSE](./LICENSE) for details.
+
+- **Free** for individuals, non-profits, and small businesses (< $2M revenue)
+- **Commercial license** required for larger organizations
 
 ## Links
 
-- [ApexSankey GitHub](https://github.com/apexcharts/apexsankey)
+- [ApexSankey Documentation](https://github.com/apexcharts/apexsankey)
+- [ApexCharts](https://apexcharts.com)
+- [License Information](https://apexcharts.com/license)
