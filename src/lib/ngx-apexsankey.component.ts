@@ -175,18 +175,10 @@ export class NgxApexsankeyComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
-   * destroys the chart instance
+   * destroys the chart instance via the core destroy() API
    */
   private destroyChart(): void {
-    if (this.graph?.clear) {
-      this.graph.clear();
-    }
-
-    const container = this.containerRef?.nativeElement;
-    if (container) {
-      container.innerHTML = "";
-    }
-
+    this.instance?.destroy();
     this.graph = null;
     this.instance = null;
   }

@@ -1,12 +1,15 @@
+// ---------------------------------------------------------------------------
+// Core data types — kept here because ngx-apexsankey loads ApexSankey via
+// the global window object (CDN pattern) and cannot import types from
+// 'apexsankey' at build time without it being a devDependency.
+// ---------------------------------------------------------------------------
+
 /**
  * node definition for sankey diagram
  */
 export interface SankeyNode {
-  /** unique identifier for the node */
   readonly id: string;
-  /** display label for the node */
   readonly title: string;
-  /** optional custom color for the node */
   readonly color?: string;
 }
 
@@ -14,90 +17,28 @@ export interface SankeyNode {
  * edge definition connecting two nodes
  */
 export interface SankeyEdge {
-  /** source node id */
   readonly source: string;
-  /** target node id */
   readonly target: string;
-  /** edge weight/size */
   readonly value: number;
-  /** optional grouping type */
   readonly type?: string;
-  /** optional custom color for the edge */
   readonly color?: string;
 }
 
 /**
- * common options for the sankey diagram
+ * data options for custom ordering and link alignment
  */
-export interface CommonOptions {
-  /** css styles for canvas root container */
-  readonly canvasStyle?: string;
-  /** enable/disable graph toolbar */
-  readonly enableToolbar?: boolean;
-  /** height of graph container */
-  readonly height?: number | string;
-  /** spacing from top and left of graph container */
-  readonly spacing?: number;
-  /** viewport height */
-  readonly viewPortHeight?: number;
-  /** viewport width */
-  readonly viewPortWidth?: number;
-  /** width of graph container */
-  readonly width?: number | string;
+export interface DataOptions {
+  readonly order?: string[][][];
+  readonly alignLinkTypes?: boolean;
 }
 
 /**
- * node styling options
+ * complete data structure for sankey diagram
  */
-export interface NodeOptions {
-  /** border color of nodes */
-  readonly nodeBorderColor?: string;
-  /** border width of nodes in pixels */
-  readonly nodeBorderWidth?: number;
-  /** width of graph nodes */
-  readonly nodeWidth?: number;
-  /** callback function for node click */
-  readonly onNodeClick?: (node: SankeyNode) => void;
-}
-
-/**
- * edge styling options
- */
-export interface EdgeOptions {
-  /** enable gradient fill based on source and target node colors */
-  readonly edgeGradientFill?: boolean;
-  /** opacity value for edges (0 to 1) */
-  readonly edgeOpacity?: number;
-}
-
-/**
- * font styling options
- */
-export interface FontOptions {
-  /** font color of node labels */
-  readonly fontColor?: string;
-  /** font family of node labels */
-  readonly fontFamily?: string;
-  /** font size of node labels */
-  readonly fontSize?: string;
-  /** font weight of node labels */
-  readonly fontWeight?: string;
-}
-
-/**
- * tooltip configuration options
- */
-export interface TooltipOptions {
-  /** enable tooltip on hover */
-  readonly enableTooltip?: boolean;
-  /** background color of tooltip */
-  readonly tooltipBGColor?: string;
-  /** border color of tooltip */
-  readonly tooltipBorderColor?: string;
-  /** tooltip html element id */
-  readonly tooltipId?: string;
-  /** html template function for tooltip */
-  readonly tooltipTemplate?: (content: TooltipContent) => string;
+export interface GraphData {
+  readonly nodes: SankeyNode[];
+  readonly edges: SankeyEdge[];
+  readonly options?: DataOptions;
 }
 
 /**
@@ -110,60 +51,62 @@ export interface TooltipContent {
 }
 
 /**
- * data options for custom ordering and link alignment
+ * combined sankey configuration options.
+ * Mirrors the SankeyOptions intersection type in core apexsankey.
  */
-export interface DataOptions {
-  /** custom node ordering - list of layers, each containing bands of node ids */
-  readonly order?: string[][][];
-  /** whether to align link types across nodes */
-  readonly alignLinkTypes?: boolean;
+export interface SankeyOptions {
+  // canvas / layout
+  readonly canvasStyle?: string;
+  readonly enableToolbar?: boolean;
+  readonly height?: number | string;
+  readonly spacing?: number;
+  readonly viewPortHeight?: number;
+  readonly viewPortWidth?: number;
+  readonly width?: number | string;
+  // node
+  readonly nodeBorderColor?: string;
+  readonly nodeBorderWidth?: number;
+  readonly nodeWidth?: number;
+  readonly onNodeClick?: (node: SankeyNode) => void;
+  // edge
+  readonly edgeGradientFill?: boolean;
+  readonly edgeOpacity?: number;
+  readonly edgeGap?: number;
+  // font
+  readonly fontColor?: string;
+  readonly fontFamily?: string;
+  readonly fontSize?: string;
+  readonly fontWeight?: string;
+  // tooltip
+  readonly enableTooltip?: boolean;
+  readonly tooltipBGColor?: string;
+  readonly tooltipBorderColor?: string;
+  readonly tooltipId?: string;
+  readonly tooltipTemplate?: (content: TooltipContent) => string;
+  // interaction
+  readonly highlightOnHover?: boolean;
+  readonly dimOnHover?: boolean;
+  // animation
+  readonly enableAnimation?: boolean;
+  readonly animationDuration?: number;
 }
 
 /**
- * complete sankey options combining all option interfaces
- */
-export type SankeyOptions = CommonOptions &
-  NodeOptions &
-  EdgeOptions &
-  FontOptions &
-  TooltipOptions;
-
-/**
- * graph data structure containing nodes, edges, and optional configuration
- */
-export interface GraphData {
-  /** array of nodes */
-  readonly nodes: SankeyNode[];
-  /** array of edges connecting nodes */
-  readonly edges: SankeyEdge[];
-  /** optional data-level options */
-  readonly options?: DataOptions;
-}
-
-/**
- * sankey graph instance returned by ApexSankey
+ * sankey graph instance returned by ApexSankey.render()
  */
 export interface SankeyGraph {
-  /** the graphlib graph instance */
   graph: unknown;
-  /** maximum rank in the graph */
   maxRank: number;
-  /** re-render the graph */
-  render: (options?: { keepOldPosition?: boolean }) => void;
-  /** clear the canvas */
+  render(options?: { keepOldPosition?: boolean }): void;
   clear?: () => void;
-  /** export to svg */
   exportToSvg?: () => void;
-  /** canvas height */
   height: number;
-  /** canvas width */
   width: number;
-  /** canvas spacing */
   spacing: number;
 }
 
 /**
- * apexsankey constructor type
+ * apexsankey constructor type (loaded via window global)
  */
 export interface ApexSankeyConstructor {
   new (element: HTMLElement, options?: Partial<SankeyOptions>): ApexSankeyInstance;
@@ -178,6 +121,7 @@ export interface ApexSankeyInstance {
   options: SankeyOptions;
   graph: SankeyGraph;
   render: (data: GraphData) => SankeyGraph;
+  destroy: () => void;
 }
 
 /**
