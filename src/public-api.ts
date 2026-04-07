@@ -14,11 +14,6 @@ export type {
 
   // options types
   SankeyOptions,
-  CommonOptions,
-  NodeOptions,
-  EdgeOptions,
-  FontOptions,
-  TooltipOptions,
   TooltipContent,
 
   // instance types
