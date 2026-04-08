@@ -31,9 +31,11 @@
     "@angular/compiler": "^17.0.0",
     "@angular/compiler-cli": "^17.0.0",
     "@angular/core": "^17.0.0",
+    "@svgdotjs/svg.js": "^3.2.5",
     "apexsankey": "^1.7.0",
     "ng-packagr": "^17.0.0",
-    "typescript": "~5.2.0"
+    "typescript": "~5.2.0",
+    "zone.js": "^0.16.1"
   },
   "scripts": {
     "build": "ng-packagr -p ng-package.json",
