@@ -2,7 +2,7 @@
   "name": "ngx-apexsankey",
   "version": "1.0.2",
   "description": "Angular wrapper for ApexSankey - A JavaScript library to create Sankey diagrams",
-  "license": "See LICENSE in LICENSE",
+  "license": "SEE LICENSE IN LICENSE",
   "author": "ApexCharts",
   "repository": {
     "type": "git",
