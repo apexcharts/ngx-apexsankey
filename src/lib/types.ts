@@ -89,6 +89,29 @@ export interface SankeyOptions {
   // animation
   readonly enableAnimation?: boolean;
   readonly animationDuration?: number;
+  // theming
+  /**
+   * A named built-in theme (`'light'`, `'dark'`, `'midnight'`, `'mint'`,
+   * `'sunset'`), a name registered with `ApexSankey.registerTheme`, or an inline
+   * theme object. Options you set explicitly still win. Left unset (and with
+   * `tooltipTheme` unset), the tooltip follows a design system that declares a
+   * dark variant, with the `apexsankey/ignite-ui` add-on loaded; naming any
+   * theme, `'light'` included, pins the tooltip.
+   */
+  readonly theme?: string | object;
+  /**
+   * `false` stops the diagram reading the `--apx-*` family tokens and the page's
+   * design system (including its variant). Defaults to `true`. Requires
+   * apexsankey >= 1.14.0.
+   */
+  readonly tokens?: boolean;
+  /**
+   * `false` stops the diagram reading the page's design system (Ignite UI's
+   * `--ig-*` tokens, including its variant); the `--apx-*` tokens still apply.
+   * Defaults to `true` and has an effect only while the `apexsankey/ignite-ui`
+   * add-on is loaded. Requires apexsankey >= 1.14.0.
+   */
+  readonly designSystem?: boolean;
 }
 
 /**
@@ -122,6 +145,11 @@ export interface ApexSankeyInstance {
   graph: SankeyGraph;
   render: (data: GraphData) => SankeyGraph;
   destroy: () => void;
+  /**
+   * Re-read the theme and repaint. Present from apexsankey 1.14.0; optional
+   * because the peer range allows older cores.
+   */
+  refreshTokens?: () => void;
 }
 
 /**

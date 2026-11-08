@@ -120,6 +120,19 @@ export class NgxApexsankeyComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
+   * re-reads the theme (the `--apex-sankey-*` variables, the `--apx-*` tokens, the
+   * named or registered theme and the page's design system) and repaints, keeping
+   * node positions and the view. Call it after a stylesheet swap (an Ignite UI
+   * light/dark switch, say) or when the `apexsankey/ignite-ui` add-on loads after
+   * the first render.
+   *
+   * Requires apexsankey >= 1.14.0; a no-op on older cores and before the first render.
+   */
+  refreshTokens(): void {
+    this.instance?.refreshTokens?.();
+  }
+
+  /**
    * initializes the sankey chart
    */
   private initChart(): void {
