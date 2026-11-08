@@ -32,7 +32,7 @@
     "@angular/compiler-cli": "^17.0.0",
     "@angular/core": "^17.0.0",
     "@svgdotjs/svg.js": "^3.2.5",
-    "apexsankey": "^1.7.0",
+    "apexsankey": "^1.14.0",
     "ng-packagr": "^17.0.0",
     "typescript": "~5.2.0",
     "zone.js": "^0.14.10"
